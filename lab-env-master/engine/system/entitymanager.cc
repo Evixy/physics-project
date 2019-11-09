@@ -66,6 +66,20 @@ void EntityManager::AddEntity(Entity* ent)
 //------------------------------------------------------------------------------
 /**
 */
+Entity* EntityManager::GetEntityByName(std::string& entityName)
+{
+	for (Entity* entity : this->entities) 
+	{
+		if (entity->name == entityName) 
+		{
+			return entity;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+/**
+*/
 std::vector<Entity*>& EntityManager::GetEntities()
 {
 	return this->entities;

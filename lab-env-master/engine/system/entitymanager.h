@@ -14,6 +14,8 @@ public:
 	Entity * RemoveEntity(Entity* ent, bool deleteEntity = false);
 
 	void AddEntity(Entity* ent);
+	
+	Entity* GetEntityByName(std::string& entityName);
 	std::vector<Entity*>& GetEntities();
 
 private:

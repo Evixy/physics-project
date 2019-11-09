@@ -440,6 +440,41 @@ void PhysicsProject::InitializeInput()
 			printf("\n");
 			printf("Facing negative y-axis \n");
 			printf("RAY transformed (none-inv): (%f, %f, %f) \n", trans.x(), trans.y(), trans.z());
+		} 
+		if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+		{
+			// Test case 1
+
+			// Get entities
+			Entity* entityFirst = this->entityManager->GetEntityByName(std::string("first"));
+			Entity* entitySecond = this->entityManager->GetEntityByName(std::string("second"));
+			
+			// Set acceleration for entities
+			entityFirst->SetAccelerationVec(vector4(0.0f, 0.0f, 0.0f));
+			entitySecond->SetAccelerationVec(vector4(0.0f, 0.0f, 0.0f));
+
+			// Set velocity for entities
+			entityFirst->SetVelocityVec(vector4(0.0f, 0.0f, 0.0f));
+			entitySecond->SetVelocityVec(vector4(0.0f, 0.0f, 0.0f));
+
+			// Set spinvector for entities
+			entityFirst->SetSpinVector(vector4(0.0f, 0.0f, 0.0f));
+			entitySecond->SetSpinVector(vector4(0.0f, 0.0f, 0.0f));
+
+			// Set position for entities
+			entityFirst->SetPosition(vector4(0.0f, 0.0f, 0.0f));
+			entitySecond->SetPosition(vector4(0.0f, 0.0f, 1.5f));
+
+			// Set rotation for entities
+			matrix44 rot_x = matrix44::rotation_x(45.0f, true);
+			matrix44 rot_y = matrix44::rotation_y(45.0f, true);
+
+			matrix44 rot_first = rot_x * rot_y;
+			matrix44 rot_second = rot_x;
+			
+			entityFirst->SetRotationMatrix(rot_first);
+			entitySecond->SetRotationMatrix(rot_second);
+
 		}
 	});
 
@@ -563,9 +598,10 @@ void PhysicsProject::CheckRayCollission(vector2& screenPos, float dir)
 void PhysicsProject::LoadWorld()
 {
 	// cube
-	matrix44 rot = matrix44::rotation_x(45.0f, true);
-	CreateCube(50.0f, vector4(0.0f, 0.0f, 0.0f), rot, "first");
-	CreateCube(50.0f, vector4(0.0f, 0.0f, 1.0f), rot, "second");
+	matrix44 rot_x = matrix44::rotation_x(45.0f, true);
+	matrix44 rot_y = matrix44::rotation_y(45.0f, true);
+	CreateCube(50.0f, vector4(0.0f, 0.0f, 0.0f), rot_x * rot_y, "first");
+	CreateCube(50.0f, vector4(0.0f, 0.0f, 1.5f), rot_x, "second");
 
 	// quad
 	//CreateQuad(5.0f, vector4(0.0f, 0.0f, -3.0f));
@@ -791,6 +827,9 @@ PhysicsProject::RenderUI()
 		ImGui::Text("Rotate Camera: Middle mouse + drag");
 		ImGui::Text("Move Camera Forwards and Backwards: Scrollwheel");
 		ImGui::Text("Apply Force: LMB");
+		ImGui::Text("--------------------------------");
+		ImGui::Text("Test cases");
+		ImGui::Text("1: F1");
 		ImGui::Text("--------------------------------");
 		ImGui::Text("Grid");
 		ImGui::Text("+X - Red");
