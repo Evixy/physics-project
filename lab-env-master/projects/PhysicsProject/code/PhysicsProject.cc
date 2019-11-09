@@ -787,8 +787,6 @@ PhysicsProject::RenderUI()
 		
 		*/
 
-
-		ImGui::Text("Collision Stop: Z");
 		ImGui::Text("Movement: WASD");
 		ImGui::Text("Rotate Camera: Middle mouse + drag");
 		ImGui::Text("Move Camera Forwards and Backwards: Scrollwheel");
