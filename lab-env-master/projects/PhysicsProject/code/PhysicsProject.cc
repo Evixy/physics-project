@@ -792,10 +792,17 @@ PhysicsProject::RenderUI()
 		ImGui::Text("Move Camera Forwards and Backwards: Scrollwheel");
 		ImGui::Text("Apply Force: LMB");
 		ImGui::Text("--------------------------------");
-		ImGui::Text("Debug data");
+		ImGui::Text("Grid");
+		ImGui::Text("+X - Red");
+		ImGui::Text("-X - Purple");
+		ImGui::Text("+Y - Green");
+		ImGui::Text("-Y - Yellow");
+		ImGui::Text("+Z - Blue");
+		ImGui::Text("-Z - Turqoise");
 		ImGui::Text("--------------------------------");
+		ImGui::Text("Debug data");
 		ImGui::Text("Camera pos: (%f, %f, %f)", this->camera->GetPos().x(), this->camera->GetPos().y(), this->camera->GetPos().z());
-		ImGui::Text("AABBs collide: %s", this->collisionTest->aabbsCollide ? "true" : "false");
+		ImGui::Text("AABBs collide: %s", this->collisionTest->aabbsCollide ? "yes" : "no");
 				
 		/*
 				// create text editors for shader code
