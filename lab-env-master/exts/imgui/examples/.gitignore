@@ -30,7 +30,6 @@ opengl3_example/opengl3_example
 *.suo
 *.vcxproj.user
 *.o
-*.obj
 *.exe
 *.pdb
 *.ilk

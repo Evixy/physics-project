@@ -588,7 +588,6 @@ void PhysicsProject::CheckRayCollission(vector2& screenPos, float dir)
 		f.CalculateForce(direction, dir * 0.1f);
 		f.hitPoint = closestHit.hitPoint;		
 		this->physServer->ApplyForceToEntity(closestHit.entity, f);
-		closestHit.entity->CalculateInertiaTensorFromOBB();
 	}
 }
 
