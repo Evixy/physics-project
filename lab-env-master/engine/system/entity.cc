@@ -1,7 +1,9 @@
 #include "config.h"
 #include "entity.h"
 #include "camera.h"
+#include <physics/force.h>
 #include "animation/Joint.h"
+#include <physics/impulse.h>
 
 namespace System
 {
@@ -86,8 +88,9 @@ void Entity::UpdatePhysics(double deltaTime)
 void Entity::UpdatePos(double deltaTime)
 {
 	//Updating position through velocity via acceleration
-	vector4 vec = this->acceleration * float(deltaTime);
-	this->velocity = this->velocity + vec;
+	this->acceleration = this->impulse.CalculateAccelerationFromImpulse(this);
+	vector4 newVelocity = this->acceleration * float(deltaTime);
+	this->velocity = this->velocity + newVelocity;
 	matrix44 transMat = matrix44::transMatFromVec(this->velocity);
 	this->transform = this->transform * transMat;
 }
@@ -200,7 +203,7 @@ vector4 Entity::CalculateCenterOfMass()
 //------------------------------------------------------------------------------
 /**
 */
-void Entity::ApplyForce(Physics::Force & f)
+void Entity::ApplyForce(Physics::Force& f)
 {
 	this->force = f;
 	this->forceApplied = true;

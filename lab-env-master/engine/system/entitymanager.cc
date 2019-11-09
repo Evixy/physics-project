@@ -75,6 +75,16 @@ Entity* EntityManager::GetEntityByName(std::string& entityName)
 			return entity;
 		}
 	}
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+/**
+*/
+Entity* EntityManager::GetEntityByName(const char* entityName)
+{
+	std::string name(entityName);
+	return GetEntityByName(name);
 }
 
 //------------------------------------------------------------------------------

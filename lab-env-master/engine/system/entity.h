@@ -5,8 +5,15 @@
 #include <render/shaderobject.h>
 
 #include <physics/boundingbox.h>
-#include <physics/force.h>
+
 #include "animation/Skeleton.h"
+#include <physics/impulse.h>
+
+namespace Physics
+{
+	struct Force;
+	class Impulse;
+}
 
 class Camera;
 using namespace Render;
@@ -59,6 +66,8 @@ public:
 	vector4 & GetAccelerationVec();
 	void SetAccelerationVec(vector4& v);
 
+	void ApplyImpulse(Physics::Impulse& impulse);
+
 	double GetMass();
 	void SetMass(double mass);
 
@@ -74,7 +83,7 @@ public:
 	void SetSpinVector(vector4& spin);
 	vector4& GetSpinVector();
 
-	void ApplyForce(Physics::Force & f);
+	void ApplyForce(Physics::Force& f);
 	bool ForceApplied();
 	void ForceHandledCallback();
 	Physics::Force& GetForce();
@@ -90,6 +99,7 @@ public:
 	vector4 angularMomentum;	
 	vector4 spinVector;
 	
+	Physics::Impulse impulse;
 	Physics::Force force;
 
 	Physics::BoundingBox obb_original;
@@ -191,6 +201,11 @@ inline vector4 & Entity::GetAccelerationVec()
 inline void Entity::SetAccelerationVec(vector4& v)
 {
 	this->acceleration = v;
+}
+
+inline void Entity::ApplyImpulse(Physics::Impulse& impulse)
+{
+	this->impulse = impulse;
 }
 
 inline double Entity::GetMass()

@@ -3,6 +3,7 @@
 #include "physicsserver.h"
 #include <math/miscmath.h>
 #include "force.h"
+#include <physics\impulse.h>
 using namespace System;
 
 namespace Physics
@@ -143,14 +144,11 @@ Collision & PhysicsServer::GetClosestCollision(vector4& startPoint, std::vector<
 */
 void PhysicsServer::ApplyForceToEntity(Entity* entity, Force& force)
 {			
-	//Acceleration
-	vector4 acceleration = force.force / float(entity->GetMass());
-	vector4 currentAcc = entity->GetAccelerationVec();
-	acceleration = acceleration + currentAcc;
-	entity->SetAccelerationVec(acceleration);
+	Impulse impulse = Impulse(force);
+	entity->ApplyImpulse(impulse);
+	entity->impulse;
 
-	//Angular momentum
-	vector4 torque = CalculateTorque(entity, force);
+	vector4 torque = PhysicsServer::CalculateTorque(entity, force);
 	vector4 angularMomentum = entity->GetAngularMomentum();
 	angularMomentum = angularMomentum + torque;
 	entity->SetAngularMomentum(angularMomentum);
@@ -159,7 +157,7 @@ void PhysicsServer::ApplyForceToEntity(Entity* entity, Force& force)
 	matrix44 inertiaTensor = entity->CalculateInertiaTensorFromOBB();
 	matrix44 invInertiaTensor = matrix44::inverse(inertiaTensor);
 	vector4 spin = invInertiaTensor * angularMomentum;
-	entity->SetSpinVector(spin);	
+	entity->SetSpinVector(spin);
 }
 
 //------------------------------------------------------------------------------

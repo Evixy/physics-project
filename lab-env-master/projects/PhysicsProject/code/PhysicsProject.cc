@@ -485,8 +485,8 @@ void PhysicsProject::InitializeInput()
 			this->leftMouseIsDown = true;
 			//here we do ray cast
 			vector2 mousePos(this->mousePos_x, this->mousePos_y);
-			float dir = 1.0f;
-			this->CheckRayCollission(mousePos, dir);
+			float mass = 1.0f;
+			this->CheckRayCollission(mousePos, mass, true);
 			
 		}
 		if (key == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE)
@@ -498,8 +498,8 @@ void PhysicsProject::InitializeInput()
 			this->rightMouseIsDown = true;
 			//here we do ray cast
 			vector2 mousePos(this->mousePos_x, this->mousePos_y);
-			float dir = -1.0f;
-			this->CheckRayCollission(mousePos, dir);
+			float mass = 1.0f;
+			this->CheckRayCollission(mousePos, mass, false);
 		}
 		if (key == GLFW_MOUSE_BUTTON_2 && action == GLFW_RELEASE)
 		{
@@ -552,7 +552,7 @@ void PhysicsProject::InitializeInput()
 	});	    
 }
 
-void PhysicsProject::CheckRayCollission(vector2& screenPos, float dir)
+void PhysicsProject::CheckRayCollission(vector2& screenPos, float mass, bool push = true)
 {	
 	Ray r = Ray::CreateRayFromScreenPos(screenPos, this->camera);
 	
@@ -562,14 +562,6 @@ void PhysicsProject::CheckRayCollission(vector2& screenPos, float dir)
 	matrix44 matStart = matrix44::transMat(r.startPoint);
 	this->ballStart->SetTransformMatrix(matStart);
 	
-	//printf("\n");
-	//printf("Ray Start:  (%f, %f, %f) \n", r.startPoint.x(), r.startPoint.y(), r.startPoint.z());
-	//printf("Ray Dir:    (%f, %f, %f) \n", r.direction.x(), r.direction.y(), r.direction.z());
-	//printf("Screen: pos     (%f, %f) \n", rayScreen.x(), rayScreen.y());
-	//printf("Eye:    ray     (%f, %f, %f) \n", rayEye.x(), rayEye.y(), rayEye.z());
-	//printf("Eye:    transf  (%f, %f, %f) \n", rayTemp.x(), rayTemp.y(), rayTemp.z());
-	//printf("Ray:    start   (%f, %f, %f) \n", rayStart.x(), rayStart.y(), rayStart.z());
-	//printf("Ray:    dir     (%f, %f, %f) \n", rayDir.x(), rayDir.y(), rayDir.z());
 	std::vector<Entity*> entities = this->entityManager->GetEntities();
 	if(this->physServer->RayTrace(r, hits, entities))
 	{
@@ -582,10 +574,10 @@ void PhysicsProject::CheckRayCollission(vector2& screenPos, float dir)
 		closestHit.entity->SetSelected(true);
 		matrix44 mat = matrix44::transMat(closestHit.hitPoint);
 		this->ballHit->SetTransformMatrix(mat);
-		vector4 direction = r.direction;
+		vector4 rayDirection = r.direction;
 
 		Force f;
-		f.CalculateForce(direction, dir * 0.1f);
+		f.CalculateForce(rayDirection, mass, push ? 1.0f : -1.0f);
 		f.hitPoint = closestHit.hitPoint;		
 		this->physServer->ApplyForceToEntity(closestHit.entity, f);
 	}
@@ -699,7 +691,7 @@ void PhysicsProject::Run()
 
 	double updateStart = glfwGetTime();
 	double updateEnd = updateStart;
-	double deltaTime = updateEnd - updateStart;
+	this->deltaTime = updateEnd - updateStart;
 	double fps;
 	while (this->window->IsOpen())
 	{		
@@ -731,8 +723,8 @@ void PhysicsProject::Run()
 
 		this->window->SwapBuffers();
 		updateEnd = glfwGetTime();
-		deltaTime = updateEnd - updateStart;
-		fps = 1.0f / deltaTime;
+		this->deltaTime = updateEnd - updateStart;
+		fps = 1.0f / this->deltaTime;
 		//printf("Deltatime: %f \n", float(deltaTime));
 		//printf("FPS: %f \n", float(fps));
 	}
@@ -761,7 +753,7 @@ PhysicsProject::RenderUI()
 		// create a new window
 		ImGui::Begin("Information Table", &show, ImGuiWindowFlags_NoSavedSettings);
 
-		ImGui::SetWindowSize(ImVec2(350.0f, 440.0f), 0);
+		ImGui::SetWindowSize(ImVec2(400.0f, 600.0f), 0);
 		//sprintf("What exactly is this?", "I've got no fucking clue");
 		/*
 		sprintf(this->linear, "Linear: %f %f %f \n", this->bodies[this->object].physicsObject.linearMomentum.x(), this->bodies[this->object].physicsObject.linearMomentum.y(), this->bodies[this->object].physicsObject.linearMomentum.z());
@@ -822,6 +814,9 @@ PhysicsProject::RenderUI()
 		
 		*/
 
+		Entity* first = this->entityManager->GetEntityByName(std::string("first"));
+		Entity* second = this->entityManager->GetEntityByName(std::string("second"));
+
 		ImGui::Text("Movement: WASD");
 		ImGui::Text("Rotate Camera: Middle mouse + drag");
 		ImGui::Text("Move Camera Forwards and Backwards: Scrollwheel");
@@ -839,9 +834,16 @@ PhysicsProject::RenderUI()
 		ImGui::Text("-Z - Turqoise");
 		ImGui::Text("--------------------------------");
 		ImGui::Text("Debug data");
+		ImGui::Text("Delta time: %f", this->deltaTime);
+		ImGui::Text("FPS: %f", 1.0f/this->deltaTime);
 		ImGui::Text("Camera pos: (%f, %f, %f)", this->camera->GetPos().x(), this->camera->GetPos().y(), this->camera->GetPos().z());
 		ImGui::Text("AABBs collide: %s", this->collisionTest->aabbsCollide ? "yes" : "no");
-				
+		ImGui::Text("Velocity");
+		ImGui::Text("First: (%f, %f, %f)", first->velocity.x(), first->velocity.y(), first->velocity.z());
+		ImGui::Text("Second: (%f, %f, %f)", second->velocity.x(), second->velocity.y(), second->velocity.z());
+		ImGui::Text("Acceleration");
+		ImGui::Text("First: (%f, %f, %f)", first->acceleration.x(), first->acceleration.y(), first->acceleration.z());
+		ImGui::Text("Second: (%f, %f, %f)", second->acceleration.x(), second->acceleration.y(), second->acceleration.z());
 		/*
 				// create text editors for shader code
 				ImGui::InputTextMultiline("Vertex Shader", vsBuffer, STRING_BUFFER_SIZE, ImVec2(-1.0f, ImGui::GetTextLineHeight() * 16),

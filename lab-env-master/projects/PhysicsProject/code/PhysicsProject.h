@@ -45,7 +45,7 @@ public:
 	void SetCamera(Camera * camera);
 	Camera* GetCamera();
 
-	void CheckRayCollission(vector2& screenPos, float dir);
+	void CheckRayCollission(vector2& screenPos, float mass, bool push);
 	void Initialize();
 	void Start();
 	
@@ -78,6 +78,8 @@ private:
 	bool leftMouseIsDown;
 	bool leftShiftIsDown;
 	bool middleMouseIsDown;
+
+	double deltaTime;
 };
 
 //------------------------------------------------------------------------------

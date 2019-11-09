@@ -16,6 +16,7 @@ public:
 	void AddEntity(Entity* ent);
 	
 	Entity* GetEntityByName(std::string& entityName);
+	Entity* GetEntityByName(const char* entityName);
 	std::vector<Entity*>& GetEntities();
 
 private:
